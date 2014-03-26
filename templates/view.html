@@ -1,6 +1,28 @@
-$def with (post)
+$def with (movie, form, reviews)
 
-<h1>$post.title</h1>
-$datestr(post.posted_on)<br/>
+<a class="btn btn-large btn-info" href="/play/$movie.id">Qvod播放</a>
 
-$post.content
+<legend>$movie.title</legend>
+<p>
+$movie.create_time<br/>
+</p>
+
+<legend>来源</legend>
+<p>
+$movie.source
+</p>
+
+<legend>简介</legend>
+<p>
+$movie.content
+</p>
+
+<legend>网友评价</legend>
+<form action="/review/$movie.id" method="movie">
+$:form.render()
+</form>
+
+$for review in reviews:
+    <br/>
+    <h4>$review.nick</h4>
+    <p>$review.content</p>

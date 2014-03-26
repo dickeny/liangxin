@@ -1,4 +1,5 @@
 #!/usr/bin/python
+#-*- coding: UTF-8 -*-
 
 """ Basic blog using webpy 0.3 """
 import web
@@ -9,9 +10,8 @@ import model
 urls = (
     '/', 'Index',
     '/view/(\d+)', 'View',
-    '/new', 'New',
-    '/delete/(\d+)', 'Delete',
-    '/edit/(\d+)', 'Edit',
+    '/play/(\d+)', 'Play',
+    '/review/(\d+)', 'Review',
 )
 
 
@@ -21,69 +21,47 @@ t_globals = {
 }
 render = web.template.render('templates', base='base', globals=t_globals)
 
+class Play:
+    def GET(self, id):
+        """ View single movie """
+        url = model.click_movie(int(id))
+        return web.redirect(url)
 
 class Index:
-
     def GET(self):
         """ Show page """
-        posts = model.get_posts()
-        return render.index(posts)
+        movies = model.get_movies()
+        return render.index(movies)
 
 
 class View:
-
     def GET(self, id):
-        """ View single post """
-        post = model.get_post(int(id))
-        return render.view(post)
+        """ View single movie """
+        movie = model.get_movie(int(id))
+        reviews = model.get_reviews(int(id))
+        form = Review.form()
+        return render.view(movie, form, reviews)
 
 
-class New:
-
+class Review:
     form = web.form.Form(
-        web.form.Textbox('title', web.form.notnull, 
+        web.form.Textbox('nick', web.form.notnull, 
             size=30,
-            description="Post title:"),
+            description=u"名称："),
         web.form.Textarea('content', web.form.notnull, 
-            rows=30, cols=80,
-            description="Post content:"),
-        web.form.Button('Post entry'),
+            rows=3, cols=80,
+            description="影评："),
+        web.form.Button(u'发表'),
     )
-
     def GET(self):
         form = self.form()
-        return render.new(form)
+        return render.review(form)
 
-    def POST(self):
+    def POST(self, id):
         form = self.form()
         if not form.validates():
             return render.new(form)
-        model.new_post(form.d.title, form.d.content)
-        raise web.seeother('/')
-
-
-class Delete:
-
-    def POST(self, id):
-        model.del_post(int(id))
-        raise web.seeother('/')
-
-
-class Edit:
-
-    def GET(self, id):
-        post = model.get_post(int(id))
-        form = New.form()
-        form.fill(post)
-        return render.edit(post, form)
-
-
-    def POST(self, id):
-        form = New.form()
-        post = model.get_post(int(id))
-        if not form.validates():
-            return render.edit(post, form)
-        model.update_post(int(id), form.d.title, form.d.content)
+        model.new_review(int(id), form.d.nick, form.d.content)
         raise web.seeother('/')
 
 

@@ -1,12 +1,22 @@
 $def with (posts)
 
-<h1>Blog posts</h1>
+<div class="jumbotron">
+    <h1>何谓良心？</h1>
+    <p>都准备好纸巾了，竟然看广告？！</p>
+    <p>这里没有广告。良心TV不会让你的纸巾空等待。我们追求极致的看片体验： <br/>
+        <span class="label label-success">直接</span>、
+        <span class="label label-info">快速</span>、
+        <span class="label label-danger">流畅</span>！
+    </p>
+    <p>因为，我们也看片！</p>
+</div>
 
-<ul>
-$for post in posts:
-    <li>
-        <a href="/view/$post.id">$post.title</a> 
-        from $datestr(post.posted_on) 
-        <a href="/edit/$post.id">Edit</a>
-    </li>
-</ul>
+<div>
+    <p class="text-center"><small>最后更新：$posts[0].create_time</small></p>
+    <ul>
+        $for post in posts:
+        <li>
+        <h4><a href="/view/$post.id">$post.title</a></h4>
+        </li>
+    </ul>
+</div>
